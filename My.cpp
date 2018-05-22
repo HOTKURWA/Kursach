@@ -25,9 +25,8 @@ int Spaship, Random[3];
 unsigned tsh[3], tEarth, tAltair, tKanopus, tNewTerra, tKapella;
 HANDLE hSH[3], hEarth, hAltair, hKanopus, hNewTerra, hKapella;
 
-unsigned __stdcall SpaceShip1(void *pArguments)
+unsigned __stdcall SpaceShips(void *pArguments)
 {
-        Spaship = 0;
         switch (SHDirection[Spaship])
         {
         case 0:
@@ -71,7 +70,6 @@ unsigned __stdcall SpaceShip1(void *pArguments)
         if ((SHposX[Spaship] == PlanetPosX[Spaship]) && (SHposY[Spaship] == PlanetPosY[Spaship]))
         {
                 srand(time(NULL));
-
                 Sleep(30);
                 SHDirection[Spaship] = rand() % 5 + 1;
         }
@@ -91,170 +89,7 @@ unsigned __stdcall SpaceShip1(void *pArguments)
         return 1;
 }
 
-unsigned __stdcall SpaceShip2(void *pArguments)
-{
-        Spaship = 1;
-        switch (SHDirection[Spaship])
-        {
-
-        case 0:
-        {
-                SHDirection[Spaship] = Random[Spaship];
-                break;
-        }
-        case 1:
-        {
-                PlanetPosX[Spaship] = 50;
-                PlanetPosY[Spaship] = 150;
-                break;
-        }
-
-        case 2:
-        {
-                PlanetPosX[Spaship] = 50;
-                PlanetPosY[Spaship] = 500;
-                break;
-        }
-        case 3:
-        {
-                PlanetPosX[Spaship] = 650;
-                PlanetPosY[Spaship] = 150;
-                break;
-        }
-        case 4:
-        {
-                PlanetPosX[Spaship] = 650;
-                PlanetPosY[Spaship] = 500;
-                break;
-        }
-        case 5:
-        {
-                PlanetPosX[Spaship] = 355;
-                PlanetPosY[Spaship] = 300;
-                break;
-        }
-        }
-
-        if ((SHposX[Spaship] == PlanetPosX[Spaship]) && (SHposY[Spaship] == PlanetPosY[Spaship]))
-        {
-                srand(time(NULL));
-                Sleep(35);
-                SHDirection[Spaship] = rand() % 5 + 1;
-        }
-        else
-        {
-                if (SHposX[Spaship] > PlanetPosX[Spaship])
-                        SHposX[Spaship]--;
-                if (SHposX[Spaship] < PlanetPosX[Spaship])
-                        SHposX[Spaship]++;
-
-                if (SHposY[Spaship] > PlanetPosY[Spaship])
-                        SHposY[Spaship]--;
-                if (SHposY[Spaship] < PlanetPosY[Spaship])
-                        SHposY[Spaship]++;
-        }
-        _endthreadex(1);
-        return 1;
-}
-
-unsigned __stdcall SpaceShip3(void *pArguments)
-{
-        Spaship = 2;
-        switch (SHDirection[Spaship])
-        {
-        case 0:
-        {
-                SHDirection[Spaship] = Random[Spaship];
-                break;
-        }
-        case 1:
-        {
-                PlanetPosX[Spaship] = 50;
-                PlanetPosY[Spaship] = 150;
-                break;
-        }
-
-        case 2:
-        {
-                PlanetPosX[Spaship] = 50;
-                PlanetPosY[Spaship] = 500;
-                break;
-        }
-        case 3:
-        {
-                PlanetPosX[Spaship] = 650;
-                PlanetPosY[Spaship] = 150;
-                break;
-        }
-        case 4:
-        {
-                PlanetPosX[Spaship] = 650;
-                PlanetPosY[Spaship] = 500;
-                break;
-        }
-        case 5:
-        {
-                PlanetPosX[Spaship] = 355;
-                PlanetPosY[Spaship] = 300;
-                break;
-        }
-        }
-
-        if ((SHposX[Spaship] == PlanetPosX[Spaship]) && (SHposY[Spaship] == PlanetPosY[Spaship]))
-        {
-                switch (SHDirection[Spaship])
-                {
-                        // case 1: hEarth = (HANDLE)_beginthreadex(NULL, 0, &Earth, NULL, 0, &tEarth);
-                        // case 2: hAltair = (HANDLE)_beginthreadex(NULL, 0, &Altair, NULL, 0, &tAltair);
-                        // case 3: hKanopus = (HANDLE)_beginthreadex(NULL, 0, &Kanopus, NULL, 0, &tKanopus);
-                        // case 4: hNewTerra = (HANDLE)_beginthreadex(NULL, 0, &NewTerra, NULL, 0, &tNewTerra);
-                        // case 5: hKapella = (HANDLE)_beginthreadex(NULL, 0, &Kapella, NULL, 0, &tKapella);
-                }
-                srand(time(NULL));
-                Sleep(25);
-                SHDirection[Spaship] = rand() % 5 + 1;
-        }
-        else
-        {
-                if (SHposX[Spaship] > PlanetPosX[Spaship])
-                        SHposX[Spaship]--;
-                if (SHposX[Spaship] < PlanetPosX[Spaship])
-                        SHposX[Spaship]++;
-
-                if (SHposY[Spaship] > PlanetPosY[Spaship])
-                        SHposY[Spaship]--;
-                if (SHposY[Spaship] < PlanetPosY[Spaship])
-                        SHposY[Spaship]++;
-        }
-        _endthreadex(1);
-        return 1;
-}
-
-unsigned __stdcall Earth(void *pArguments)
-{
-
-        _endthreadex(1);
-        return 1;
-}
-unsigned __stdcall Altair(void *pArguments)
-{
-
-        _endthreadex(1);
-        return 1;
-}
-unsigned __stdcall Kanopus(void *pArguments)
-{
-
-        _endthreadex(1);
-        return 1;
-}
-unsigned __stdcall NewTerra(void *pArguments)
-{
-
-        _endthreadex(1);
-        return 1;
-}
-unsigned __stdcall Kapella(void *pArguments)
+unsigned __stdcall Planets(void *pArguments)
 {
 
         _endthreadex(1);
@@ -315,9 +150,9 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 
         // for (int i = 0; i < 5; i++)
         // {
-        //         semafors[i] = CreateSemaphore(NULL, 0, 1, NULL); // Создание семафора. Начальное значение 0 , максимальное 1.
+        //         semafors[i] = CreateSemaphore(NULL, 0, 5, NULL); // Создание семафора. Начальное значение 0 , максимальное 1.
         // }
-        do
+        while ()
         {
                 Rectangle(hdc, 20, 40, 120, 140); //Earth
                 TextOut(hdc, 50, 80, "Earth", 6);
@@ -344,39 +179,40 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
                 sprintf(buff, "%d", random[4]);
                 TextOut(hdc, 355, 245, buff, 2);
 
+                Spaship = 0;
+                hSH[0] = (HANDLE)_beginthreadex(NULL, 0, &SpaceShips, NULL, 0, &tsh[1]);
                 TextOut(hdc, SHposX[0], SHposY[0], " SH1 ", 5);
                 sprintf(buff, " %d %d ", SHposX[0], SHposY[0]);
                 TextOut(hdc, SHposX[0], SHposY[0] + 15, buff, 9);
+                CloseHandle(hSH[0]);
 
+                Spaship = 1;
+                hSH[1] = (HANDLE)_beginthreadex(NULL, 0, &SpaceShips, NULL, 0, &tsh[2]);
                 TextOut(hdc, SHposX[1], SHposY[1], " SH2 ", 5);
                 sprintf(buff, " %d %d ", SHposX[1], SHposY[1]);
                 TextOut(hdc, SHposX[1], SHposY[1] + 15, buff, 9);
+                CloseHandle(hSH[1]);
 
+                Spaship = 2;
+                hSH[2] = (HANDLE)_beginthreadex(NULL, 0, &SpaceShips, NULL, 0, &tsh[3]);
                 TextOut(hdc, SHposX[2], SHposY[2], " SH3 ", 5);
                 sprintf(buff, " %d %d ", SHposX[2], SHposY[2]);
                 TextOut(hdc, SHposX[2], SHposY[2] + 15, buff, 9);
-
-                hSH[0] = (HANDLE)_beginthreadex(NULL, 0, &SpaceShip1, NULL, 0, &tsh[1]);
-                hSH[1] = (HANDLE)_beginthreadex(NULL, 0, &SpaceShip2, NULL, 0, &tsh[2]);
-                hSH[2] = (HANDLE)_beginthreadex(NULL, 0, &SpaceShip3, NULL, 0, &tsh[3]);
+                CloseHandle(hSH[2]);
 
                 // hAltair = (HANDLE)_beginthreadex(NULL, 0, &Altair, NULL, 0, &tAltair);
                 // hKanopus = (HANDLE)_beginthreadex(NULL, 0, &Kanopus, NULL, 0, &tKanopus);
                 // hNewTerra = (HANDLE)_beginthreadex(NULL, 0, &NewTerra, NULL, 0, &tNewTerra);
                 // hKapella = (HANDLE)_beginthreadex(NULL, 0, &Kapella, NULL, 0, &tKapella);
                 Sleep(10);
-                UpdateWindow(hMain); //Обновить окно
+                UpdateWindow(hMain); //Обновить окно               
+        }
 
-                CloseHandle(hSH);
+        while (GetMessage(&msg, NULL, 0, 0))
+        {
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
+        }
 
-        } while (1);
-        return 0l;
-
-        // while (GetMessage(&msg, NULL, 0, 0))
-        // {
-        //         TranslateMessage(&msg);
-        //         DispatchMessage(&msg);
-        // }
-
-        //return (INT)msg.wParam;
+        return (INT)msg.wParam;
 }
