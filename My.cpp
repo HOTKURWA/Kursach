@@ -17,81 +17,131 @@ HANDLE semafors[5];
 HWND hMain = NULL;
 HDC hdc;
 
+char buff[2];
+
 int random[10];
 int SHposX[3] = {100, 100, 100}, SHposY[3] = {10, 50, 80}, SHDirection[3] = {0, 0, 0};
 int PlanetPosX[3], PlanetPosY[3];
 int Spaship, Random[3];
 
-unsigned tsh[3], tEarth, tAltair, tKanopus, tNewTerra, tKapella;
-HANDLE hSH[3], hEarth, hAltair, hKanopus, hNewTerra, hKapella;
+unsigned tsh[3], tPaint;
+HANDLE hSH[3], hPaint;
+
+struct TSpaceSip
+{
+ int cx, cy, px, py, dx, dy;
+
+};
+
+TSpaceSip ships[3];
 
 unsigned __stdcall SpaceShips(void *pArguments)
 {
-        switch (SHDirection[Spaship])
+        while (1)
         {
-        case 0:
-        {
-                SHDirection[Spaship] = Random[Spaship];
-                break;
-        }
-        case 1:
-        {
-                PlanetPosX[Spaship] = 50;
-                PlanetPosY[Spaship] = 150;
-                break;
-        }
+                switch (SHDirection[Spaship])
+                {
+                case 0:
+                {
+                        SHDirection[Spaship] = Random[Spaship];
+                        break;
+                }
+                case 1:
+                {
+                        PlanetPosX[Spaship] = 50;
+                        PlanetPosY[Spaship] = 150;
+                        break;
+                }
 
-        case 2:
-        {
-                PlanetPosX[Spaship] = 50;
-                PlanetPosY[Spaship] = 500;
-                break;
-        }
-        case 3:
-        {
-                PlanetPosX[Spaship] = 650;
-                PlanetPosY[Spaship] = 150;
-                break;
-        }
-        case 4:
-        {
-                PlanetPosX[Spaship] = 650;
-                PlanetPosY[Spaship] = 500;
-                break;
-        }
-        case 5:
-        {
-                PlanetPosX[Spaship] = 355;
-                PlanetPosY[Spaship] = 300;
-                break;
-        }
-        }
+                case 2:
+                {
+                        PlanetPosX[Spaship] = 50;
+                        PlanetPosY[Spaship] = 500;
+                        break;
+                }
+                case 3:
+                {
+                        PlanetPosX[Spaship] = 650;
+                        PlanetPosY[Spaship] = 150;
+                        break;
+                }
+                case 4:
+                {
+                        PlanetPosX[Spaship] = 650;
+                        PlanetPosY[Spaship] = 500;
+                        break;
+                }
+                case 5:
+                {
+                        PlanetPosX[Spaship] = 355;
+                        PlanetPosY[Spaship] = 300;
+                        break;
+                }
+                }
 
-        if ((SHposX[Spaship] == PlanetPosX[Spaship]) && (SHposY[Spaship] == PlanetPosY[Spaship]))
-        {
-                srand(time(NULL));
-                Sleep(30);
-                SHDirection[Spaship] = rand() % 5 + 1;
-        }
-        else
-        {
-                if (SHposX[Spaship] > PlanetPosX[Spaship])
-                        SHposX[Spaship]--;
-                if (SHposX[Spaship] < PlanetPosX[Spaship])
-                        SHposX[Spaship]++;
+                if ((SHposX[Spaship] == PlanetPosX[Spaship]) && (SHposY[Spaship] == PlanetPosY[Spaship]))
+                {
+                        srand(time(NULL));
+                        Sleep(30);
+                        SHDirection[Spaship] = rand() % 5 + 1;
+                }
+                else
+                {
+                        if (SHposX[Spaship] > PlanetPosX[Spaship])
+                                SHposX[Spaship]--;
+                        if (SHposX[Spaship] < PlanetPosX[Spaship])
+                                SHposX[Spaship]++;
 
-                if (SHposY[Spaship] > PlanetPosY[Spaship])
-                        SHposY[Spaship]--;
-                if (SHposY[Spaship] < PlanetPosY[Spaship])
-                        SHposY[Spaship]++;
+                        if (SHposY[Spaship] > PlanetPosY[Spaship])
+                                SHposY[Spaship]--;
+                        if (SHposY[Spaship] < PlanetPosY[Spaship])
+                                SHposY[Spaship]++;
+                }
+                Sleep(50);
         }
         _endthreadex(1);
         return 1;
 }
 
-unsigned __stdcall Planets(void *pArguments)
+unsigned __stdcall Paint(void *pArguments)
 {
+        while (1)
+        {
+                for (int i = 0; i < 3; i++)
+                {
+                        sprintf(buff, " %d ", i);
+                        TextOut(hdc, SHposX[i], SHposY[i] + 5, "    ", 5);
+                        TextOut(hdc, SHposX[i], SHposY[i] - 5, "    ", 5);
+                        TextOut(hdc, SHposX[i], SHposY[i], buff, 3);
+                }
+                Rectangle(hdc, 20, 40, 120, 140); //Earth
+                TextOut(hdc, 50, 80, "Earth", 6);
+                sprintf(buff, "%d", random[1]);
+                TextOut(hdc, 50, 95, buff, 2);
 
+                Rectangle(hdc, 20, 390, 120, 490); //Altair
+                TextOut(hdc, 50, 430, "Altair", 6);
+                sprintf(buff, "%d", random[2]);
+                TextOut(hdc, 50, 445, buff, 2);
+
+                Rectangle(hdc, 630, 40, 730, 140); //Kanopus
+                TextOut(hdc, 650, 80, "Kanopus", 7);
+                sprintf(buff, "%d", random[3]);
+                TextOut(hdc, 650, 95, buff, 2);
+
+                Rectangle(hdc, 630, 390, 730, 490); //NewTerra
+                TextOut(hdc, 650, 430, "NewTerra", 8);
+                sprintf(buff, "%d", random[4]);
+                TextOut(hdc, 650, 445, buff, 2);
+
+                Rectangle(hdc, 330, 190, 430, 290); //Kapella
+                TextOut(hdc, 355, 230, "Kapella", 7);
+                sprintf(buff, "%d", random[4]);
+                TextOut(hdc, 355, 245, buff, 2);
+
+                Sleep(50);
+                UpdateWindow(hMain);
+        }
         _endthreadex(1);
         return 1;
 }
@@ -120,7 +170,7 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
         WNDCLASS wc;
         HANDLE hRand;
         PAINTSTRUCT ps;
-        char buff[2];
+
         unsigned long SH1ID;
         srand(time(NULL));
 
@@ -152,61 +202,16 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
         // {
         //         semafors[i] = CreateSemaphore(NULL, 0, 5, NULL); // Создание семафора. Начальное значение 0 , максимальное 1.
         // }
-        while ()
+
+        hPaint = (HANDLE)_beginthreadex(NULL, 0, &Paint, NULL, 0, &tPaint);
+
+        for (int i = 0; i, 3; i++)
         {
-                Rectangle(hdc, 20, 40, 120, 140); //Earth
-                TextOut(hdc, 50, 80, "Earth", 6);
-                sprintf(buff, "%d", random[1]);
-                TextOut(hdc, 50, 95, buff, 2);
-
-                Rectangle(hdc, 20, 390, 120, 490); //Altair
-                TextOut(hdc, 50, 430, "Altair", 6);
-                sprintf(buff, "%d", random[2]);
-                TextOut(hdc, 50, 445, buff, 2);
-
-                Rectangle(hdc, 630, 40, 730, 140); //Kanopus
-                TextOut(hdc, 650, 80, "Kanopus", 7);
-                sprintf(buff, "%d", random[3]);
-                TextOut(hdc, 650, 95, buff, 2);
-
-                Rectangle(hdc, 630, 390, 730, 490); //NewTerra
-                TextOut(hdc, 650, 430, "NewTerra", 8);
-                sprintf(buff, "%d", random[4]);
-                TextOut(hdc, 650, 445, buff, 2);
-
-                Rectangle(hdc, 330, 190, 430, 290); //Kapella
-                TextOut(hdc, 355, 230, "Kapella", 7);
-                sprintf(buff, "%d", random[4]);
-                TextOut(hdc, 355, 245, buff, 2);
-
-                Spaship = 0;
-                hSH[0] = (HANDLE)_beginthreadex(NULL, 0, &SpaceShips, NULL, 0, &tsh[1]);
-                TextOut(hdc, SHposX[0], SHposY[0], " SH1 ", 5);
-                sprintf(buff, " %d %d ", SHposX[0], SHposY[0]);
-                TextOut(hdc, SHposX[0], SHposY[0] + 15, buff, 9);
-                CloseHandle(hSH[0]);
-
-                Spaship = 1;
-                hSH[1] = (HANDLE)_beginthreadex(NULL, 0, &SpaceShips, NULL, 0, &tsh[2]);
-                TextOut(hdc, SHposX[1], SHposY[1], " SH2 ", 5);
-                sprintf(buff, " %d %d ", SHposX[1], SHposY[1]);
-                TextOut(hdc, SHposX[1], SHposY[1] + 15, buff, 9);
-                CloseHandle(hSH[1]);
-
-                Spaship = 2;
-                hSH[2] = (HANDLE)_beginthreadex(NULL, 0, &SpaceShips, NULL, 0, &tsh[3]);
-                TextOut(hdc, SHposX[2], SHposY[2], " SH3 ", 5);
-                sprintf(buff, " %d %d ", SHposX[2], SHposY[2]);
-                TextOut(hdc, SHposX[2], SHposY[2] + 15, buff, 9);
-                CloseHandle(hSH[2]);
-
-                // hAltair = (HANDLE)_beginthreadex(NULL, 0, &Altair, NULL, 0, &tAltair);
-                // hKanopus = (HANDLE)_beginthreadex(NULL, 0, &Kanopus, NULL, 0, &tKanopus);
-                // hNewTerra = (HANDLE)_beginthreadex(NULL, 0, &NewTerra, NULL, 0, &tNewTerra);
-                // hKapella = (HANDLE)_beginthreadex(NULL, 0, &Kapella, NULL, 0, &tKapella);
-                Sleep(10);
-                UpdateWindow(hMain); //Обновить окно               
+                hSH[i] = (HANDLE)_beginthreadex(NULL, 0, &SpaceShips, NULL, 0, &tsh[i]);
+                Spaship = i;
         }
+
+        // CloseHandle(hSH);
 
         while (GetMessage(&msg, NULL, 0, 0))
         {
