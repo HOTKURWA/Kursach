@@ -1,5 +1,5 @@
-п»ї//gcc My.cpp -o My.exe -mwindows
-//cd C:\Andrew\РћРјР“РўРЈ\2 РєСѓСЂСЃ\OC\РљСѓСЂСЃР°С‡\Kursach
+//gcc My.cpp -o My.exe -mwindows
+//cd C:\Andrew\ОмГТУ\2 курс\OC\Курсач\Kursach
 
 //SetTextColor(hdc, RGB(0, 0, 0));
 
@@ -17,13 +17,13 @@ HANDLE semPlanet[5];
 HWND hMain = NULL;
 HDC hdc;
 
-char buff[3];
+char buff[2];
 
 int randNP[5];
 int NumPass = 0, PassSum = 5;
 int PassPos[100], PassDir[100], pPas;
 
-int SHposX[3] = {200, 200, 200}, SHposY[3] = {10, 50, 80}, SHDirection[3] = {0, 1, 2};
+int SHposX[3] = {100, 100, 100}, SHposY[3] = {10, 50, 80}, SHDirection[3] = {0, 1, 2};
 int Spaship;
 int timeP, timeShip;
 
@@ -31,7 +31,6 @@ int PlanetPosX[3], PlanetPosY[3];
 
 unsigned __stdcall Passengers(void *pArguments)
 {
-        srand(time(NULL));
         int nPas = NumPass;
         int BlockDirection;
 
@@ -40,17 +39,19 @@ unsigned __stdcall Passengers(void *pArguments)
 
                 WaitForSingleObject(semPlanet[PassPos[nPas]], INFINITE);
 
-                while (BlockDirection == PassDir[nPas]) //РќРµ Р»РµС‚СЏС‚ РЅР° РїСѓСЃС‚С‹Рµ РїР»Р°РЅРµС‚С‹
+                BlockDirection = PassDir[nPas];
+
+                while (BlockDirection == PassDir[nPas]) //Не летят на пустые планеты
                 {
                         PassDir[nPas] = rand() % 5;
 
-                        if (randNP[PassDir[nPas]] == 0)
+                        if (PassDir[nPas] == 0)
                         {
                                 PassDir[nPas] = BlockDirection;
                         }
                 }
 
-                if (PassDir[nPas] == timeP) //Р•СЃР»Рё Р»РµС‚СЏС‚ РЅР° РЅСѓР¶РЅСѓСЋ РїР»Р°РЅРµС‚Сѓ, С‚Рѕ СЃР°РґСЏС‚СЃСЏ РІ РєР°СЂР°Р±Р»СЊ
+                if (PassDir[nPas] == timeP) //Если летян на нужную планету, то садятся в карабль 
                 {
                         ReleaseSemaphore(semShip[timeShip], 1, NULL);
 
@@ -68,14 +69,13 @@ unsigned __stdcall Passengers(void *pArguments)
 
 unsigned __stdcall SpaceShips(void *pArguments)
 {
-        srand(time(NULL));
         int nSh = Spaship;
         int BlockDirection;
 
         while (1)
         {
 
-                switch (SHDirection[nSh]) //Р’С‹Р±РѕСЂ РјР°СЂС€СЂСѓС‚Р°
+                switch (SHDirection[nSh]) //Выбор маршрута
                 {
                 case 0:
                 {
@@ -115,7 +115,7 @@ unsigned __stdcall SpaceShips(void *pArguments)
                 }
                 }
 
-                if ((SHposX[nSh] == PlanetPosX[nSh]) && (SHposY[nSh] == PlanetPosY[nSh])) // Р”РµР№СЃРІС‚РёСЏ РїРѕ РїСЂРёР±С‹С‚РёРё РІ РјРµСЃС‚Рѕ РЅР°Р·РЅР°С‡РµРЅРёСЏ
+                if ((SHposX[nSh] == PlanetPosX[nSh]) && (SHposY[nSh] == PlanetPosY[nSh])) // Дейсвтия по прибытии в место назначения
                 {
                         srand(time(NULL));
                         //Sleep(1);
@@ -139,7 +139,7 @@ unsigned __stdcall SpaceShips(void *pArguments)
 
                         WaitForSingleObject(semShip[nSh], 1000);
                 }
-                else //РЎР°РјРѕ РїРµСЂРµРґРІРёР¶РµРЅРёРµ РєР°СЂР°Р±Р»РµР№
+                else                                                    //Само передвижение караблей
                 {
                         if (SHposX[nSh] > PlanetPosX[nSh])
                                 SHposX[nSh]--;
@@ -157,14 +157,13 @@ unsigned __stdcall SpaceShips(void *pArguments)
         return 1;
 }
 
-unsigned __stdcall Paint(void *pArguments) //РћС‚СЂРёСЃРѕРІРєР°
-{        
+unsigned __stdcall Paint(void *pArguments)      //Отрисовка
+{
         while (1)
         {
-
                 for (int i = 0; i < 3; i++)
                 {
-                        sprintf(buff, " *%d* ", i+1);
+                        sprintf(buff, " SH%d ", i);
                         TextOut(hdc, SHposX[i], SHposY[i], buff, 5);
                 }
 
@@ -193,14 +192,14 @@ unsigned __stdcall Paint(void *pArguments) //РћС‚СЂРёСЃРѕРІРєР°
                 sprintf(buff, "%d", randNP[4]);
                 TextOut(hdc, 355, 245, buff, 2);
 
-                Sleep(10);
+                Sleep(5);
                 UpdateWindow(hMain);
         }
         _endthreadex(1);
         return 1;
 }
 
-//РЎС‚Р°РЅРґР°СЂС‚РЅР°СЏ С„СѓРЅРєС†РёСЏ РѕР±СЂР°Р±РѕС‚РєРё СЃРѕРѕР±С‰РµРЅРёР№ РѕРєРЅРѕРј
+//Стандартная функция обработки сообщений окном
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
         UINT nCmd = HIWORD(wParam);
@@ -209,16 +208,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         switch (msg)
         {
         case WM_DESTROY:
-                PostQuitMessage(0); //Р—Р°РєСЂС‹РІР°РµРј РїСЂРёР»РѕР¶РµРЅРёРµ
+                PostQuitMessage(0); //Закрываем приложение
                 break;
         default:
-                return DefWindowProc(hWnd, msg, wParam, lParam); //РІРѕР·РІСЂР°С‰Р°РµРј РґРµС„РѕР»С‚РЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ
+                return DefWindowProc(hWnd, msg, wParam, lParam); //возвращаем дефолтные значения
         }
         return 0l;
 }
-//Р“Р»Р°РІРЅР°СЏ С„СѓРЅРєС†РёСЏ РїСЂРёР»РѕР¶РµРЅРёСЏ
+//Главная функция приложения
 INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 {
+        srand(time(NULL));
         MSG msg;
         WNDCLASS wc;
         PAINTSTRUCT ps;
@@ -227,33 +227,33 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
         HANDLE hSH[3], hPaint, hPas[100];
 
         memset(&wc, 0, sizeof(wc));
-        wc.lpszClassName = "MyWndClass"; //РќР°Р·РІР°РЅРёРµ РєР»Р°СЃСЃР° РѕРєРЅР°
+        wc.lpszClassName = "MyWndClass"; //Название класса окна
         wc.hInstance = hInst;
         wc.lpfnWndProc = WndProc;
-        RegisterClass(&wc);                                                                                        //Р РµРіРёСЃС‚СЂРёСЂСѓРµРј РєР»Р°СЃСЃ РѕРєРЅР°
-        hMain = CreateWindow(wc.lpszClassName, "SpaceX", WS_OVERLAPPEDWINDOW, 100, 100, 800, 600, 0, 0, hInst, 0); //РЎРѕР·РґР°С‚СЊ РѕРєРЅРѕ
-        ShowWindow(hMain, SW_SHOW);                                                                                //РџРѕРєР°Р·Р°С‚СЊ РѕРєРЅРѕ
-        hdc = BeginPaint(hMain, &ps);                                                                              // РЅР°С‡Р°Р»Рѕ РїРµСЂРµСЂРёСЃРѕРІРєРё
+        RegisterClass(&wc);                                                                                        //Регистрируем класс окна
+        hMain = CreateWindow(wc.lpszClassName, "SpaceX", WS_OVERLAPPEDWINDOW, 100, 100, 800, 600, 0, 0, hInst, 0); //Создать окно
+        ShowWindow(hMain, SW_SHOW);                                                                                //Показать окно
+        hdc = BeginPaint(hMain, &ps);                                                                              // начало перерисовки
 
-        for (int i = 0; i < 3; i++) //РЎРѕР·РґР°РЅРёРµ СЃРµРјР°С„РѕСЂРѕРІ РґР»СЏ РєР°СЂР°Р±Р»РµР№
+        for (int i = 0; i < 3; i++)//Создание семафоров для караблей
         {
                 semShip[i] = CreateSemaphore(NULL, 0, 5, NULL);
         }
 
-        for (int i = 0; i < 5; i++) //РЎРѕР·РґР°РЅРёРµ СЃРµРјР°С„РѕСЂРѕРІ РґР»СЏ РїР»Р°РЅРµС‚
+        for (int i = 0; i < 5; i++)//Создание семафоров для планет
         {
                 semPlanet[i] = CreateSemaphore(NULL, 0, 1, NULL);
         }
 
-        hPaint = (HANDLE)_beginthreadex(NULL, 0, &Paint, NULL, 0, &tPaint); //РЎРѕР·РґР°РЅРёРµ РїСЂРѕС†РµСЃСЃР° РґР»СЏ РѕС‚СЂРёСЃРѕРІРєРё
+        hPaint = (HANDLE)_beginthreadex(NULL, 0, &Paint, NULL, 0, &tPaint); //Создание процесса для отрисовки
 
-        for (int i = 0; i < 5; i++) //Р Р°РЅРґРѕРј РґР»СЏ Р¶РµР»Р°СЋС‰РёС… РЅР° РїРѕР»РµС‚
+        for (int i = 0; i < 5; i++) //Рандом для желающих на полет
         {
                 randNP[i] = rand() % 10 + 10;
-                PassSum = PassSum + randNP[i];
+                PassSum = +randNP[i];
         }
 
-        for (int i = 0; i < 5; i++) //РЎРѕР·РґР°РЅРёРµ РїСЂРѕС†РµСЃСЃРѕРІ РґР»СЏ РїР°СЃСЃР°Р¶РёСЂРѕРІ
+        for (int i = 0; i < 5; i++)//Создание процессов для пассажиров
         {
                 for (int n = 0; n < randNP[i]; n++)
                 {
@@ -264,14 +264,14 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
                 }
         }
 
-        for (int i = 0; i < 3; i++) //РЎРѕР·РґР°РЅРёРµ РїСЂРѕС†РµСЃСЃРѕРІ РґР»СЏ РєР°СЂР°Р±Р»РµР№
+        for (int i = 0; i < 3; i++)//Создание процессов для караблей
         {
                 hSH[i] = (HANDLE)_beginthreadex(NULL, 0, &SpaceShips, NULL, 0, &tsh[i]);
                 Spaship = i;
                 Sleep(10);
         }
 
-        while (GetMessage(&msg, NULL, 0, 0)) //РЎС‡РёС‚С‹РІР°РЅРёРµ РґРµР№СЃС‚РІРёР№ РґР»СЏ Р·Р°РєСЂС‹С‚РёСЏ РѕРєРЅР°
+        while (GetMessage(&msg, NULL, 0, 0))//Считывание действий для закрытия окна
         {
                 TranslateMessage(&msg);
                 DispatchMessage(&msg);
