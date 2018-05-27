@@ -25,8 +25,9 @@ int randNP[5];
 int NumPass = 0, PassSum = 5;
 int PassPos[100], PassDir[100], pPas;
 
-int SHposX[3] = {100, 100, 100}, SHposY[3] = {10, 50, 80}, SHDirection[3] = {1, 2, 3};
+int SHposX[3] = {100, 100, 100}, SHposY[3] = {10, 50, 80}, SHDirection[3] = {0, 1, 2};
 int Spaship;
+int timeP, timeShip;
 
 int PlanetPosX[3], PlanetPosY[3];
 
@@ -35,9 +36,21 @@ unsigned __stdcall Passengers(void *pArguments)
         int nPas = NumPass;
 
         while (1)
-        {                
+        {
                 WaitForSingleObject(semPlanet[PassPos[nPas]], INFINITE);
-                randNP[PassPos[nPas]]--;
+                if (randNP[PassPos[nPas]] > 5)
+                {
+                        randNP[PassPos[nPas]] -= 5;
+                }
+                else
+                        randNP[PassPos[nPas]] = 0;
+
+                // PassDir[nPas] = rand() % 3 + 1;
+                // if (PassDir[nPas] == timeP)
+                // {
+                //         ReleaseSemaphore(semShip[timeShip], 1, NULL);
+                //         randNP[PassPos[nPas]]--;
+                // }
         }
         _endthreadex(1);
         return 1;
@@ -46,6 +59,7 @@ unsigned __stdcall Passengers(void *pArguments)
 unsigned __stdcall SpaceShips(void *pArguments)
 {
         int nSh = Spaship;
+        int BlockDirection;
 
         while (1)
         {
@@ -93,10 +107,26 @@ unsigned __stdcall SpaceShips(void *pArguments)
                 if ((SHposX[nSh] == PlanetPosX[nSh]) && (SHposY[nSh] == PlanetPosY[nSh]))
                 {
                         srand(time(NULL));
-                        Sleep(1);
+                        //Sleep(1);
 
                         ReleaseSemaphore(semPlanet[SHDirection[nSh]], 1, NULL);
-                        SHDirection[nSh] = rand() % 5 + 1;
+
+                        BlockDirection = SHDirection[nSh];
+
+                        while (BlockDirection == SHDirection[nSh])
+                        {
+                                SHDirection[nSh] = rand() % 5 ;
+
+                                if (randNP[SHDirection[nSh]] == 0)
+                                {
+                                        SHDirection[nSh] = BlockDirection;
+                                }
+                        }
+
+                        // timeP = SHDirection[nSh];
+                        // timeShip = nSh;
+
+                        // WaitForSingleObject(semShip[nSh], INFINITE);
                 }
                 else
                 {
@@ -110,7 +140,7 @@ unsigned __stdcall SpaceShips(void *pArguments)
                         if (SHposY[nSh] < PlanetPosY[nSh])
                                 SHposY[nSh]++;
                 }
-                Sleep(20);
+                Sleep(10);
         }
         _endthreadex(1);
         return 1;
@@ -122,39 +152,38 @@ unsigned __stdcall Paint(void *pArguments)
         {
                 for (int i = 0; i < 3; i++)
                 {
-                        sprintf(buff, " %d ", i);
-                        TextOut(hdc, SHposX[i], SHposY[i] + 5, "    ", 5);
-                        TextOut(hdc, SHposX[i], SHposY[i] - 5, "    ", 5);
+                        sprintf(buff, " %d ", timeShip);
+                        // TextOut(hdc, SHposX[i], SHposY[i] + 5, "    ", 5);
+                        // TextOut(hdc, SHposX[i], SHposY[i] - 5, "    ", 5);
                         TextOut(hdc, SHposX[i], SHposY[i], buff, 3);
                 }
-
 
                 Rectangle(hdc, 20, 40, 120, 140); //Earth
                 TextOut(hdc, 50, 80, "Earth", 6);
                 sprintf(buff, "%d", randNP[0]);
-                TextOut(hdc, 50, 95, buff, 3);
+                TextOut(hdc, 50, 95, buff, 2);
 
                 Rectangle(hdc, 20, 390, 120, 490); //Altair
                 TextOut(hdc, 50, 430, "Altair", 6);
                 sprintf(buff, "%d", randNP[1]);
-                TextOut(hdc, 50, 445, buff, 3);
+                TextOut(hdc, 50, 445, buff, 2);
 
                 Rectangle(hdc, 630, 40, 730, 140); //Kanopus
                 TextOut(hdc, 650, 80, "Kanopus", 7);
                 sprintf(buff, "%d", randNP[2]);
-                TextOut(hdc, 650, 95, buff, 3);
+                TextOut(hdc, 650, 95, buff, 2);
 
                 Rectangle(hdc, 630, 390, 730, 490); //NewTerra
                 TextOut(hdc, 650, 430, "NewTerra", 8);
                 sprintf(buff, "%d", randNP[3]);
-                TextOut(hdc, 650, 445, buff, 3);
+                TextOut(hdc, 650, 445, buff, 2);
 
                 Rectangle(hdc, 330, 190, 430, 290); //Kapella
                 TextOut(hdc, 355, 230, "Kapella", 7);
                 sprintf(buff, "%d", randNP[4]);
-                TextOut(hdc, 355, 245, buff, 3);
+                TextOut(hdc, 355, 245, buff, 2);
 
-                Sleep(20);
+                Sleep(10);
                 UpdateWindow(hMain);
         }
         _endthreadex(1);
@@ -201,7 +230,7 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int)
 
         for (int i = 0; i < 3; i++)
         {
-                semShip[i] = CreateSemaphore(NULL, 0, 3, NULL);
+                semShip[i] = CreateSemaphore(NULL, 0, 5, NULL);
         }
 
         for (int i = 0; i < 5; i++)
